@@ -1,0 +1,27 @@
+[Unit]
+Description=Calibre Uploader
+After=network.target docker.service
+Wants=docker.service
+
+[Service]
+Type=simple
+User=calibre-uploader
+Group=calibre-uploader
+# calibre-uploader shells out to `docker exec` to run calibredb, so its
+# user must be in the docker group on this host.
+SupplementaryGroups=docker
+EnvironmentFile=-/etc/calibre-uploader/calibre-uploader.env
+ExecStart=/usr/local/bin/calibre-uploader
+WorkingDirectory=/var/lib/calibre-uploader
+Restart=on-failure
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/calibre-uploader
+
+[Install]
+WantedBy=multi-user.target
